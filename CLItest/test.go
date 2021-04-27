@@ -10,8 +10,9 @@ import (
 func main() {
 	var numb string
 	var correct int = 0
+	var incorrect int = 0
 	done := make(chan bool, 1)
-	to := time.After(5 * time.Second)
+	to := time.After(30 * time.Second)
 
 	file, err := os.Open("problems.csv")
 	if err != nil {
@@ -22,36 +23,41 @@ func main() {
 	reader := csv.NewReader(file)
 	reader.Comma = ','
 	go func() {
-		defer fmt.Printf("Время вышло\n")
+		defer fmt.Printf("https://www.pngitem.com/pimgs/m/258-2583502_transparent-shiny-png-slowpoke-shiny-png-download.png\n")
 
 		for {
 			record, e := reader.Read()
 			if e != nil {
 				fmt.Println(e)
 				break
-			}
-
-			fmt.Println(record[0])
+			}			
 
 			select {
-			case <-to:
-				fmt.Print("https://www.youtube.com/watch?v=P37mn84nabg&ab_channel=baton1337\n")
+			case <-to:				
 				done <- true
 				return
 			default:
-				fmt.Scanln(&numb)
+				fmt.Println(record[0])
+				fmt.Scanln(&numb)			
 			}
 
 			if numb == record[1] {
 				correct++
+			}else{
+				incorrect++
+			}
+
+			if correct+incorrect==13{
+				result(correct)
 			}
 		}
+		
 	}()
 
 	<-done
-	fmt.Print("Медленно")
+	fmt.Print("Ты:")
 
-	result(correct)
+
 }
 
 func result(correct int) {
@@ -64,4 +70,5 @@ func result(correct int) {
 	} else if correct > 10 {
 		fmt.Print("А ты хорош")
 	}
+	os.Exit(0)
 }

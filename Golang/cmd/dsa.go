@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func main() {
+func bug() {
 	fmt.Print("Введи два числа: ")
 
 	reader := bufio.NewReader(os.Stdin)

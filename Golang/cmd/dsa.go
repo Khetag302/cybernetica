@@ -1,6 +1,6 @@
-package m
+//package m
 
-import (
+/*import (
 	"bufio"
 	"cybernetica/Golang/internal"
 	"fmt"
@@ -19,3 +19,4 @@ func bug() {
 	res := internal.Pow(a, n)
 	fmt.Printf("%d в степени %d будет равно %d\n", a, n, res)
 }
+*/

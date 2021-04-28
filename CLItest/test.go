@@ -11,19 +11,30 @@ func main() {
 	var numb string
 	var correct int = 0
 	var incorrect int = 0
-	done := make(chan bool, 1)
-	to := time.After(30 * time.Second)
+	var swtime int
+	var answer string
 
-	file, err := os.Open("problems.csv")
+	timer2:=timer(swtime)
+	done := make(chan bool, 1)
+	to := time.After(time.Duration(timer2) * time.Second)
+
+	file, err := os.Open("problem.csv")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
+	fmt.Print("Если вы готовы к тесту напишите \"да\"\n")
+	fmt.Scan(&answer)
+
+	if answer!="да"{
+		os.Exit(0)
+	}
+
 	reader := csv.NewReader(file)
 	reader.Comma = ','
 	go func() {
-		defer fmt.Printf("https://www.pngitem.com/pimgs/m/258-2583502_transparent-shiny-png-slowpoke-shiny-png-download.png\n")
+		defer os.Exit(0)
 
 		for {
 			record, e := reader.Read()
@@ -47,17 +58,13 @@ func main() {
 				incorrect++
 			}
 
-			if correct+incorrect==13{
+			if correct+incorrect==14{
 				result(correct)
 			}
 		}
-		
 	}()
-
 	<-done
 	fmt.Print("Ты:")
-
-
 }
 
 func result(correct int) {
@@ -71,4 +78,24 @@ func result(correct int) {
 		fmt.Print("А ты хорош")
 	}
 	os.Exit(0)
+}
+
+func timer(swtime int)int{
+	var check int
+fmt.Print("Сколько времени вы хотите:\n1)15 секунд\n2)30 секунд\n3)45 секунд\n5)60 секунд\n")
+fmt.Scan(&check)
+
+switch check{
+case 1:
+	swtime=15
+case 2:
+	swtime=30
+case 3:
+	swtime=45
+case 4:
+	swtime=60
+default:
+	swtime=30
+}
+return swtime
 }

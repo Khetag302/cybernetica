@@ -2,100 +2,67 @@ package main
 
 import (
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"os"
 	"time"
 )
 
 func main() {
-	var numb string
-	var correct int = 0
-	var incorrect int = 0
-	var swtime int
-	var answer string
 
-	timer2:=timer(swtime)
-	done := make(chan bool, 1)
-	to := time.After(time.Duration(timer2) * time.Second)
+	answers := map[string]int{
+		"correct":   0,
+		"incorrect": 0,
+	}
+	// var incorrect int = 0
 
-	file, err := os.Open("problem.csv")
+	filepath := flag.String("file", "problem.csv", "file name")
+	timerFlag := flag.Int("t", 5, "timer")
+	flag.Parse()
+
+	// timer2:=timer(swtime)
+	// done := make(chan bool, 1)
+	timer := time.NewTimer(time.Duration(*timerFlag) * time.Second)
+	file, err := os.Open(*filepath)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 	defer file.Close()
 
-	fmt.Print("Если вы готовы к тесту напишите \"да\"\n")
-	fmt.Scan(&answer)
-
-	if answer!="да"{
-		os.Exit(0)
-	}
-
 	reader := csv.NewReader(file)
-	reader.Comma = ','
-	go func() {
-		defer os.Exit(0)
 
-		for {
-			record, e := reader.Read()
-			if e != nil {
-				fmt.Println(e)
-				break
-			}			
+	inp := make(chan string)
+LOOP:
+	for {
+		record, e := reader.Read()
+		if e != nil {
+			fmt.Println(e)
+			break
+		}
+		fmt.Println(record[0])
 
-			select {
-			case <-to:				
-				done <- true
-				return
-			default:
-				fmt.Println(record[0])
-				fmt.Scanln(&numb)			
-			}
+		go func() {
+			var numb string
+			fmt.Scanln(&numb)
+			inp <- numb
+		}()
 
-			if numb == record[1] {
-				correct++
-			}else{
-				incorrect++
-			}
-
-			if correct+incorrect==14{
-				result(correct)
+		select {
+		case <-timer.C:
+			break LOOP
+		case b := <-inp:
+			if b == record[1] {
+				answers["correct"]++
+			} else {
+				answers["incorrect"]++
 			}
 		}
-	}()
-	<-done
-	fmt.Print("Ты:")
-}
-
-func result(correct int) {
-	if correct <= 4 {
-		fmt.Print("https://www.youtube.com/watch?v=P37mn84nabg&ab_channel=baton1337")
-	} else if correct > 4 && correct <= 7 {
-		fmt.Print("Я думал все намного хуже")
-	} else if correct > 7 && correct <= 10 {
-		fmt.Print("Мммм... неплохо")
-	} else if correct > 10 {
-		fmt.Print("А ты хорош")
 	}
-	os.Exit(0)
+
+	PrintResult(answers)
 }
 
-func timer(swtime int)int{
-	var check int
-fmt.Print("Сколько времени вы хотите:\n1)15 секунд\n2)30 секунд\n3)45 секунд\n5)60 секунд\n")
-fmt.Scan(&check)
-
-switch check{
-case 1:
-	swtime=15
-case 2:
-	swtime=30
-case 3:
-	swtime=45
-case 4:
-	swtime=60
-default:
-	swtime=30
-}
-return swtime
+func PrintResult(correct map[string]int) {
+	fmt.Printf("Правельных: %d; Неправельных:%d", correct["correct"], correct["incorrect"])
 }

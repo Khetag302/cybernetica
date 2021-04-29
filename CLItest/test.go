@@ -14,14 +14,13 @@ func main() {
 		"correct":   0,
 		"incorrect": 0,
 	}
-	// var incorrect int = 0
+
 
 	filepath := flag.String("file", "problem.csv", "file name")
 	timerFlag := flag.Int("t", 5, "timer")
 	flag.Parse()
 
-	// timer2:=timer(swtime)
-	// done := make(chan bool, 1)
+
 	timer := time.NewTimer(time.Duration(*timerFlag) * time.Second)
 	file, err := os.Open(*filepath)
 	if err != nil {
